@@ -1,4 +1,5 @@
-﻿using CardapioOnlineAPI.Models;
+﻿using CardapioOnlineAPI.Dto;
+using CardapioOnlineAPI.Models;
 
 namespace CardapioOnlineAPI.Repository
 {
@@ -20,6 +21,19 @@ namespace CardapioOnlineAPI.Repository
         public MenuModel GetMenuItemById(int id)
         {
             return menuModels.FirstOrDefault(item => item.Id == id);
+        }
+
+        public void UpdateMenuItem(MenuModel menuModel)
+        {
+
+            {
+                var menuModelOld = menuModels.FirstOrDefault(item => item.Id == menuModel.Id);
+                menuModelOld.Name = menuModel.Name;
+                menuModelOld.Description = menuModel.Description;
+                menuModelOld.Price = menuModel.Price;
+                menuModelOld.ImageUrl = menuModel.ImageUrl;
+            }
+
         }
         
     }    

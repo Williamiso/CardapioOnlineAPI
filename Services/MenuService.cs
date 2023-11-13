@@ -1,4 +1,5 @@
-﻿using CardapioOnlineAPI.Models;
+﻿using CardapioOnlineAPI.Dto;
+using CardapioOnlineAPI.Models;
 using CardapioOnlineAPI.Repository;
 
 namespace CardapioOnlineAPI.Services
@@ -16,8 +17,15 @@ namespace CardapioOnlineAPI.Services
             return _repository.GetAllMenuItems();
         }
 
-        public void AddMenuItem(MenuModel menuModel)
+        public void AddMenuItem(CreateRequest request)
         {
+            var menuModel = new MenuModel()
+            {
+                Description = request.Description,
+                Name = request.Name, 
+                Price = request.Price
+            };
+
             _repository.AddMenuItem(menuModel);
         }
 
@@ -26,6 +34,17 @@ namespace CardapioOnlineAPI.Services
             var retorno = _repository.GetMenuItemById(id);
 
             return retorno;
+        }
+
+        public void UpdateMenuItem(int id, MenuModel menuModel)
+        {
+            var exist = GetMenuItemById(id);
+
+            if(exist != null)
+            {
+                _repository.UpdateMenuItem(menuModel);
+            }
+           
         }
     }
 }

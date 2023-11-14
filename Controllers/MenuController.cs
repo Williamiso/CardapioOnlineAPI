@@ -45,15 +45,9 @@ namespace CardapioOnlineAPI.Controllers
                 return BadRequest();
             }
 
-            var menuModel = new MenuModel
-            {
-                Name = request.Name,
-                Description = request.Description,
-                Price = request.Price,
-                Id = request.Id
-            };
+           
 
-            _service.UpdateMenuItem(id, menuModel);
+            _service.UpdateMenuItem(id, request);
 
             return NoContent();
         }
@@ -89,30 +83,9 @@ namespace CardapioOnlineAPI.Controllers
         [HttpPost("{id}/upload/")]
         public async Task<IActionResult> UploadImage(int id, IFormFile file)
         {
-            var menuItem = _service.GetMenuItemById(id);
+           await _service.UploadImage(id, file);  
 
-            if (menuItem == null)
-            {
-                return NotFound();
-            }
-
-            if (file == null)
-            {
-                return BadRequest();
-            }
-
-            string uploadsFolder = Path.Combine(@"C:\temp\upload");
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.Name;
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            menuItem.ImageUrl = filePath;
-            _service.UpdateMenuItem(id, menuItem);
-
+             
 
             return Ok();
         }

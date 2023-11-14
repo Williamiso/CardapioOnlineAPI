@@ -1,6 +1,7 @@
 ﻿using CardapioOnlineAPI.Dto;
 using CardapioOnlineAPI.Models;
 using CardapioOnlineAPI.Repository;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CardapioOnlineAPI.Services
 {
@@ -36,11 +37,13 @@ namespace CardapioOnlineAPI.Services
             return retorno;
         }
 
-        public void UpdateMenuItem(int id, MenuModel menuModel)
+        public void UpdateMenuItem(int id, UpdateRequest request)
         {
             var exist = GetMenuItemById(id);
 
-            if(exist != null)
+           MenuModel menuModel = UpdateRequest.FromUpdateRequest(request);
+
+            if (exist != null)
             {
                 _repository.UpdateMenuItem(menuModel);
             }
@@ -52,6 +55,33 @@ namespace CardapioOnlineAPI.Services
             _repository.DeleteMenuItem(id);
         }
 
-        
+        public async Task<MenuModel> UploadImage(int id, IFormFile file)
+        {
+            var menuItem = GetMenuItemById(id);
+
+            if (menuItem == null)
+            {
+                throw new Exception("MenuItem não localizado");
+            }
+
+            if (file == null)
+            {
+                throw new Exception("Imagem não inserida, arquivo vazio");
+            }
+
+            string uploadsFolder = Path.Combine(@"C:\temp\upload");
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.Name;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            menuItem.ImageUrl = filePath;
+            UpdateMenuItem(id, UpdateRequest.FromMenuItem(menuItem));
+
+            return menuItem;
+        }
     }
 }

@@ -3,6 +3,7 @@ using CardapioOnlineAPI.Models;
 using CardapioOnlineAPI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace CardapioOnlineAPI.Controllers
 {
@@ -56,5 +57,65 @@ namespace CardapioOnlineAPI.Controllers
 
             return NoContent();
         }
+
+
+        [HttpGet("{id}")]
+        public IActionResult GetMenuItemById(int id)
+        {
+            var menuItem = _service.GetMenuItemById(id);
+
+            if (menuItem == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(menuItem);
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteMenuItem(int id)
+        {
+            var menuItem = _service.GetMenuItemById(id);
+
+            if (menuItem == null)
+            {
+                return NotFound();
+            }
+
+            _service.DeleteMenuItem(id);
+            return NoContent();
+        }
+
+        [HttpPost("{id}/upload/")]
+        public async Task<IActionResult> UploadImage(int id, IFormFile file)
+        {
+            var menuItem = _service.GetMenuItemById(id);
+
+            if (menuItem == null)
+            {
+                return NotFound();
+            }
+
+            if (file == null)
+            {
+                return BadRequest();
+            }
+
+            string uploadsFolder = Path.Combine(@"C:\temp\upload");
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.Name;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            menuItem.ImageUrl = filePath;
+            _service.UpdateMenuItem(id, menuItem);
+
+
+            return Ok();
+        }
+
     }
 }

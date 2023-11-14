@@ -35,6 +35,18 @@ namespace CardapioOnlineAPI.Repository
             }
 
         }
+
+        public void DeleteMenuItem(int id) 
+        {
+            var existingItem = menuModels.FirstOrDefault(item => item.Id == id);
+
+            if (existingItem != null) 
+            {
+                menuModels.Remove(existingItem);
+            }
+        }
+
+   
         
     }    
 }

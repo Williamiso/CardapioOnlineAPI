@@ -46,5 +46,12 @@ namespace CardapioOnlineAPI.Services
             }
            
         }
+
+        public void DeleteMenuItem(int id)
+        {
+            _repository.DeleteMenuItem(id);
+        }
+
+        
     }
 }
